@@ -1,3 +1,4 @@
+import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -34,9 +35,17 @@ public class Main extends Application {
         Button slowMode = new Button("Slow Mode");
         buttonBox.getChildren().add(slowMode);
 
-        Board test = new Board(border, 5, 5);
-        test.initializePlayer(2, Color.CHOCOLATE);
-        //test.initializePlayer(0, Color.BLACK);
+        Game startMode = new Game(3,3, new SlowMode(Color.ALICEBLUE, Color.BEIGE), border);
+        AnimationTimer timer = new AnimationTimer() {
+            @Override
+            public void handle(long now) {
+                if(startMode.canRun()) {
+                    startMode.runGame();
+                }
+            }
+        };
+        timer.start();
+
 
 
     }
