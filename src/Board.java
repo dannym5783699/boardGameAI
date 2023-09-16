@@ -9,6 +9,7 @@ import javafx.scene.shape.Rectangle;
 
 /**
  * @author Danny Metcalfe
+ * @Description:
  * The Board class handles setting up the visual board as well as a array representation.
  * It will also add Board Pieces and determine what moves are valid.
  * It handles most board related things.
@@ -59,6 +60,10 @@ public class Board {
     private boolean canClick = true;
 
 
+    private Game game;
+
+
+
     /**
      * Public class of board pieces. Only the board can use the constructor for pieces.
      * Other classes may see the pieces so that they can validate moves.
@@ -105,7 +110,7 @@ public class Board {
                         startColumn = this.column;
                         hasPiece = true;
                     } else if (hasPiece) {
-                        movePiece(startColumn, startRow, this.column, this.row);
+                        game.getValidation(startColumn, startRow, this.column, this.row);
                         hasPiece = false;
                     }
                 }
@@ -146,6 +151,10 @@ public class Board {
             this.row = row;
         }
 
+        public Color getPieceColor(){
+            return this.pieceColor;
+        }
+
 
 
     }
@@ -158,7 +167,7 @@ public class Board {
      * @param columns How many Columns in the board.
      * @param rows How many rows in the board.
      */
-    public Board(BorderPane appPane, int rows, int columns){
+    public Board(BorderPane appPane, Game game, int rows, int columns){
         //Setup background and the board arrays and visual Board.
         this.columns = columns;
         this.rows = rows;
@@ -180,6 +189,7 @@ public class Board {
         gameGrid.setVgap(2);
         gameGrid.setPrefTileHeight(500.0/rows);
         gameGrid.setPrefTileWidth(500.0/columns);
+        this.game = game;
 
         //Adding board pieces to arrays and visual.
         for(int r = 0; r< rows; r++){
@@ -260,6 +270,22 @@ public class Board {
     public boolean getCanClick(){
         return canClick;
     }
+
+
+    public int getRows(){
+        return rows;
+    }
+
+    public int getColumns(){
+        return columns;
+    }
+
+
+    public BoardPiece[][] getValidationGrid(){
+        return validationGrid;
+    }
+
+
 
 
 
