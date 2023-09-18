@@ -1,5 +1,6 @@
 How to use:
 - Once started you can click on a mode to start.
+- You can click on a piece and then click where to move it to make a move.
 - In slow mode when computer runs you can see the possible moves on the bottom.
 - It will list starting row and column to end row and column and chance at the bottom in slow mode.
 - You can click any valid move yourself even a removed one or let the computer choose in slow mode.
