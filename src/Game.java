@@ -5,6 +5,7 @@ import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 
 /**
@@ -56,6 +57,15 @@ public class Game {
     //Need a box for buttons created later in the game such as a new game button.
     private final HBox topRow = new HBox(40);
 
+    private int currentTurn = 0;
+
+    private Label turnLabel = new Label();
+
+    private int wins = 0;
+
+    private Player firstWin = null;
+
+
 
     /**
      * Creates a new Game and sets up the game.
@@ -79,6 +89,8 @@ public class Game {
         appPane.setTop(top);
         topRow.getChildren().add(currentLabel);
         topRow.getChildren().add(lastWinner);
+        topRow.getChildren().add(turnLabel);
+
 
     }
 
@@ -94,11 +106,21 @@ public class Game {
     public void getValidation(int fromC, int fromR, int toC, int toR){
         currentValid = gameMode.validate(gameBoard.getValidationGrid(), fromC, fromR, toC, toR, this.currentPlayer);
         if(currentValid){
+            this.currentPlayer.setLast(fromC, fromR, toC, toR, gameBoard, this);
             gameBoard.movePiece(fromC, fromR, toC, toR);
+            this.currentPlayer.clearMoves();
             this.currentPlayer = gameMode.nextPlayer(this.currentPlayer);
             currentValid = false;
             canRun = true;
+            gameBoard.setCanClick(false);
         }
+        //For when the computer has removed all valid moves.
+        if(fromC  < 0){
+            canRun = true;
+            this.currentPlayer = gameMode.nextPlayer(this.currentPlayer);
+        }
+
+
     }
 
 
@@ -109,18 +131,72 @@ public class Game {
     public void runGame(){
         canRun = false;
         if(!currentValid) {
+            currentTurn++;
+            turnLabel.setText("Current turn: " + getCurrentTurn());
             currentLabel.setText("Current Player: " + currentPlayer.getPlayerNum());
             boolean hasMoves = gameMode.hasValidMoves(currentPlayer, gameBoard.getValidationGrid());
             boolean reachedEnd = false;
+            boolean noPlayerMoves = false;
             if(last != null){
                 reachedEnd = gameMode.hasReachedEnd(last, gameBoard.getValidationGrid());
+                noPlayerMoves = last.allRemoved();
             }
             //Check if anyone has won and add a next game button if someone has won.
-            if(!hasMoves || reachedEnd){
+            if(!hasMoves || reachedEnd || noPlayerMoves){
+                wins++;
+                //For when the computer removed all valid moves.
+                if(noPlayerMoves){
+                    last.setRemoved();
+                    last = currentPlayer;
+                }
+                //If the current player has no moves or the last player reached the end then they win.
                 gameBoard.setCanClick(false);
                 lastWinner.setText("Player " + last.getPlayerNum() + " wins. ");
+                if(!noPlayerMoves){
+                    gameMode.nextPlayer(last).removeLast();
+                }
+                last.addWin();
+                if(firstWin == null){
+                    firstWin = last;
+                }
+                canRun = false;
                 Button nextGame = new Button("Click for next game.");
-                topRow.getChildren().add(nextGame);
+
+                //For when there is game limit.
+                if(gameMode.numberOfGames() > 0){
+                    gameBoard = new Board(appPane, Game.this, rows, columns);
+                    topRow.getChildren().remove(nextGame);
+                    lastWinner.setText("No player has won. ");
+                    gameMode.setUpPlayers(gameBoard);
+                    currentPlayer = gameMode.startingPlayer();
+                    gameMode.resetPlayers();
+                    currentTurn = 0;
+                    turnLabel.setText("Current Turn: " + getCurrentTurn());
+                    gameMode.hasValidMoves(currentPlayer, gameBoard.getValidationGrid());
+                    canRun = true;
+                    if(wins >= gameMode.numberOfGames()){
+                        canRun = false;
+                        Pane pane = new Pane();
+                        HBox info = new HBox(20);
+                        Label player1 = new Label("Player " + currentPlayer.getPlayerNum() + " has " +
+                                currentPlayer.getWins() + " wins.");
+                        Label player2 = new Label("Player " + gameMode.nextPlayer(currentPlayer).getPlayerNum() +
+                                " has " + gameMode.nextPlayer(currentPlayer).getWins() + " wins.");
+                        Label first = new Label("First win was by player " + firstWin.getPlayerNum() +
+                                ", player 1 played first. ");
+
+                        info.setTranslateY(200);
+                        info.setTranslateX(200);
+                        pane.getChildren().add(info);
+                        info.getChildren().add(player1);
+                        info.getChildren().add(player2);
+                        info.getChildren().add(first);
+                        appPane.setCenter(pane);
+                    }
+                }
+                else{
+                    topRow.getChildren().add(nextGame);
+                }
                 //When button is clicked a new game is set up while keeping the same players.
                 nextGame.setOnMouseClicked(new EventHandler<MouseEvent>() {
                     @Override
@@ -130,12 +206,25 @@ public class Game {
                         lastWinner.setText("No player has won. ");
                         gameMode.setUpPlayers(gameBoard);
                         currentPlayer = gameMode.startingPlayer();
+                        gameMode.resetPlayers();
+                        currentTurn = 0;
+                        turnLabel.setText("Current Turn: " + getCurrentTurn());
+                        gameMode.hasValidMoves(currentPlayer, gameBoard.getValidationGrid());
+                        canRun  = true;
                     }
                 });
                 return;
+
             }
             last = currentPlayer;
-            currentPlayer.makeTurn(gameBoard, this);
+            gameMode.setVisuals(appPane, this, currentPlayer, gameBoard);
+            if(currentPlayer.canChoose()){
+                currentPlayer.chooseMove(gameBoard);
+            }
+            else{
+                currentPlayer.makeTurn(gameBoard, this);
+            }
+
 
         }
 
@@ -151,6 +240,14 @@ public class Game {
      */
     public boolean canRun(){
         return canRun;
+    }
+
+    /**
+     * Gets the current turn.
+     * @return Returns the current turn number.
+     */
+    public int getCurrentTurn(){
+        return this.currentTurn;
     }
 
 

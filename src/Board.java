@@ -151,6 +151,10 @@ public class Board {
             this.row = row;
         }
 
+        /**
+         * Get the color of this piece.
+         * @return returns the color of the piece.
+         */
         public Color getPieceColor(){
             return this.pieceColor;
         }
@@ -272,15 +276,26 @@ public class Board {
     }
 
 
+    /**
+     * Gets the number of rows in the board.
+     * @return Returns the number of rows.
+     */
     public int getRows(){
         return rows;
     }
 
+    /**
+     * Gets the number of columns in the board.
+     * @return Returns the number of columns in the board.
+     */
     public int getColumns(){
         return columns;
     }
 
-
+    /**
+     * Gets the Board representation.
+     * @return Returns an array of board pieces showing the current board.
+     */
     public BoardPiece[][] getValidationGrid(){
         return validationGrid;
     }
