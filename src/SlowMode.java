@@ -97,7 +97,7 @@ public class SlowMode extends Mode {
             int totalMoves = currentMoves.size();
             int removedMoves = 0;
             ArrayList<Label> coordinateLabels = new ArrayList<>();
-            double[] percentages = new double[totalMoves];
+            int[] percentages = new int[totalMoves];
 
             for(int i = 0; i<totalMoves; i++){
                 coordinateLabels.add(new Label("c" + currentMoves.get(i)[0] + " r" +
@@ -116,7 +116,7 @@ public class SlowMode extends Mode {
             compChance = compChance * 100;
             for(int i = 0; i<totalMoves; i++){
                 if(percentages[i] != 0){
-                    percentages[i] = compChance;
+                    percentages[i] = (int) Math.round(compChance);
                 }
                 String format = String.valueOf(percentages[i]);
                 coordinateLabels.get(i).setText(coordinateLabels.get(i).getText() +" Chance: " + format +"%");
