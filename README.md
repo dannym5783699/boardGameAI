@@ -7,7 +7,7 @@ How to use:
 - In slow mode an empty match box does not immediately end the turn in case the user clicks for the computer.
 - In slow mode if there is an empty match box the computer will lose only when allowing the computer to move.
 - When a player has won you can click the button at the top to reset the board.
-- For fast mode when entering a number of turns you must click enter after entering then click the fast mode.
+- For Auto mode when entering a number of turns you must click enter after entering then click the Auto mode.
 - You can change the rows and columns of the board in the range 3-15 included.
 - You can also change player one and player 2 colors. 
 - When entering in a text field you must click enter.
