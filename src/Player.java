@@ -122,15 +122,32 @@ public interface Player {
      */
     public void setLast(int fromC, int fromR, int toC, int toR, Board gameBoard, Game game);
 
-    /**
-     * Gets the current number of wins by a player.
-     * @return returns how many games have been won.
-     */
-    public int getWins();
 
     /**
-     * Adds one win to the current wins by a player.
+     * Gets the number of wins depending on if the player was first or not.
+     * @param hasFirst Is the player first to start or not.
+     * @return if hasFirst is true then return wins when starting. If not return other wins.
      */
-    public void addWin();
+    public int getWins(boolean hasFirst);
+
+
+    /**
+     * Adds a win to starting wins or other wins.
+     * @param hasFirst is the player first to start.
+     */
+    public void addWin(boolean hasFirst);
+
+    /**
+     * Set if the player is starting or not.
+     * @param isFirst Is the player first to start.
+     */
+    public void setFirst(boolean isFirst);
+
+    /**
+     * Checks if the player is the starting player.
+     * @return Returns true if this player is starting.
+     */
+    public boolean isFirst();
+
 
 }

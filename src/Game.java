@@ -63,6 +63,8 @@ public class Game {
 
     private int wins = 0;
 
+
+
     private Player firstWin = null;
 
 
@@ -106,6 +108,7 @@ public class Game {
     public void getValidation(int fromC, int fromR, int toC, int toR){
         currentValid = gameMode.validate(gameBoard.getValidationGrid(), fromC, fromR, toC, toR, this.currentPlayer);
         if(currentValid){
+            gameBoard.getOverlay().getChildren().clear();
             this.currentPlayer.setLast(fromC, fromR, toC, toR, gameBoard, this);
             gameBoard.movePiece(fromC, fromR, toC, toR);
             this.currentPlayer.clearMoves();
@@ -155,7 +158,7 @@ public class Game {
                 if(!noPlayerMoves){
                     gameMode.nextPlayer(last).removeLast();
                 }
-                last.addWin();
+                last.addWin(last.isFirst());
                 if(firstWin == null){
                     firstWin = last;
                 }
@@ -168,8 +171,8 @@ public class Game {
                     topRow.getChildren().remove(nextGame);
                     lastWinner.setText("No player has won. ");
                     gameMode.setUpPlayers(gameBoard);
-                    currentPlayer = gameMode.startingPlayer();
                     gameMode.resetPlayers();
+                    currentPlayer = gameMode.startingPlayer();
                     currentTurn = 0;
                     turnLabel.setText("Current Turn: " + getCurrentTurn());
                     gameMode.hasValidMoves(currentPlayer, gameBoard.getValidationGrid());
@@ -177,22 +180,54 @@ public class Game {
                     if(wins >= gameMode.numberOfGames()){
                         canRun = false;
                         Pane pane = new Pane();
+                        VBox fullInfo = new VBox(20);
                         HBox info = new HBox(20);
+                        fullInfo.getChildren().add(info);
+                        HBox ratio1 = new HBox(20);
+                        fullInfo.getChildren().add(ratio1);
+                        ratio1.setTranslateX(200);
+                        ratio1.setTranslateY(200);
+                        HBox ratio2 = new HBox(20);
+                        fullInfo.getChildren().add(ratio2);
+                        ratio2.setTranslateX(200);
+                        ratio2.setTranslateY(200);
+
+                        //Building label strings for  end game stats.
                         Label player1 = new Label("Player " + currentPlayer.getPlayerNum() + " has " +
-                                currentPlayer.getWins() + " wins.");
+                                (currentPlayer.getWins(false) + currentPlayer.getWins(true)) + " wins.");
+
                         Label player2 = new Label("Player " + gameMode.nextPlayer(currentPlayer).getPlayerNum() +
-                                " has " + gameMode.nextPlayer(currentPlayer).getWins() + " wins.");
+                                " has " + (gameMode.nextPlayer(currentPlayer).getWins(false) +
+                                gameMode.nextPlayer(currentPlayer).getWins(true)) + " wins.");
+
                         Label first = new Label("First win was by player " + firstWin.getPlayerNum() +
                                 ", player 1 played first. ");
 
+                        Label oneFirst = new Label();
+                        int currentNum = currentPlayer.getPlayerNum();
+                        int nextNum = gameMode.nextPlayer(currentPlayer).getPlayerNum();
+
+                        oneFirst.setText("When player " + currentNum+ " goes first: Player " + currentNum +
+                                " has " + currentPlayer.getWins(true) + " wins, Player " + nextNum +
+                                " has " + gameMode.nextPlayer(currentPlayer).getWins(false) + " wins.");
+                        ratio1.getChildren().add(oneFirst);
+
+                        Label secondFirst = new Label();
+                        secondFirst.setText("When player " + nextNum+ " goes first: Player " + currentNum +
+                                " has " + currentPlayer.getWins(false) + " wins, Player " + nextNum +
+                                " has " + gameMode.nextPlayer(currentPlayer).getWins(true) + " wins.");
+                        ratio2.getChildren().add(secondFirst);
+
+
                         info.setTranslateY(200);
                         info.setTranslateX(200);
-                        pane.getChildren().add(info);
+                        pane.getChildren().add(fullInfo);
                         info.getChildren().add(player1);
                         info.getChildren().add(player2);
                         info.getChildren().add(first);
                         appPane.setCenter(pane);
                     }
+
                 }
                 else{
                     topRow.getChildren().add(nextGame);

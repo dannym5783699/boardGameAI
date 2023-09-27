@@ -1,8 +1,5 @@
 
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.TilePane;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
@@ -61,6 +58,11 @@ public class Board {
 
 
     private Game game;
+
+    //Holds an overlay to the board and also tile width and height.
+    private final Pane overLay = new Pane();
+    private final double tilePaneWidth;
+    private final double tilePaneHeight;
 
 
 
@@ -185,6 +187,9 @@ public class Board {
         backGround.setMaxSize(500,500);
         fullBoard.getChildren().add(backGround);
         fullBoard.getChildren().add(gameGrid);
+        fullBoard.getChildren().add(overLay);
+        overLay.setMaxSize(500,500);
+        overLay.setDisable(true);
         appPane.setCenter(fullBoard);
         gameGrid.setMaxSize(500+(2*columns),500 + (2*rows));
         gameGrid.setPrefColumns(columns);
@@ -193,6 +198,8 @@ public class Board {
         gameGrid.setVgap(2);
         gameGrid.setPrefTileHeight(500.0/rows);
         gameGrid.setPrefTileWidth(500.0/columns);
+        tilePaneHeight  = gameGrid.getTileHeight();
+        tilePaneWidth = gameGrid.getTileWidth();
         this.game = game;
 
         //Adding board pieces to arrays and visual.
@@ -299,6 +306,31 @@ public class Board {
     public BoardPiece[][] getValidationGrid(){
         return validationGrid;
     }
+
+    /**
+     * Returns the pane on top of the board to add any visuals.
+     * @return Returns the top of the stack pane to add visuals above the board.
+     */
+    public Pane getOverlay(){
+        return this.overLay;
+    }
+
+    /**
+     * Gets the tile height of the board.
+     * @return Returns the height of each tile in the board.
+     */
+    public double getTileHeight(){
+        return this.tilePaneHeight;
+    }
+
+    /**
+     * Gets the width of each tile in the board.
+     * @return Returns the width of the tiles in the board.
+     */
+    public double getTileWidth(){
+        return this.tilePaneWidth;
+    }
+
 
 
 

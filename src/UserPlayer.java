@@ -199,21 +199,45 @@ public class UserPlayer implements Player{
     }
 
     /**
-     * Gets the current number of wins. This is not tracked for a user player currently.
+     * Does nothing for the userPlayer currently.
+     * @param hasFirst Is the player first to start or not.
      * @return 0
      */
     @Override
-    public int getWins() {
+    public int getWins(boolean hasFirst) {
         return 0;
     }
 
     /**
-     * Adds a win. Does nothing for a user player.
+     * Does nothing for a userPlayer currently.
+     * @param hasFirst is the player first to start.
      */
     @Override
-    public void addWin() {
+    public void addWin(boolean hasFirst) {
 
     }
+
+    /**
+     * Does nothing for a userPlayer currently.
+     * @param isFirst Is the player first to start.
+     */
+    @Override
+    public void setFirst(boolean isFirst) {
+
+    }
+
+    /**
+     * Does nothing for a userPlayer currently.
+     * @return false
+     */
+    @Override
+    public boolean isFirst() {
+        return false;
+    }
+
+
+
+
 
 
 }
