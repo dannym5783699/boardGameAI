@@ -4,8 +4,11 @@ import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
+import javafx.scene.shape.Line;
 
 import java.util.ArrayList;
 
@@ -83,15 +86,12 @@ public class SlowMode extends Mode {
     public void setVisuals(BorderPane gameScreen, Game currentGame, Player current, Board gameBoard) {
         HBox hbox = new HBox(20);
         VBox buttons = new VBox(10);
-        HBox coordinates = new HBox(20);
         Button compChoice = new Button("Let the computer decide.");
-        gameScreen.setBottom(coordinates);
+        Pane overlay = gameBoard.getOverlay();
         gameScreen.setRight(hbox);
         hbox.getChildren().add(buttons);
         if(current.canChoose()) {
 
-            Label posMove = new Label(" Possible Moves:  ");
-            coordinates.getChildren().add(posMove);
             buttons.getChildren().add(compChoice);
             ArrayList<int[]> currentMoves = current.getMoves();
             int totalMoves = currentMoves.size();
@@ -99,11 +99,29 @@ public class SlowMode extends Mode {
             ArrayList<Label> coordinateLabels = new ArrayList<>();
             int[] percentages = new int[totalMoves];
 
+            //Add lines and percentages to the overlay.
             for(int i = 0; i<totalMoves; i++){
-                coordinateLabels.add(new Label("c" + currentMoves.get(i)[0] + " r" +
-                        currentMoves.get(i)[1] + " To c" + currentMoves.get(i)[2] + " r" +
-                        currentMoves.get(i)[3] ));
-                coordinates.getChildren().add(coordinateLabels.get(i));
+                double startX = (currentMoves.get(i)[0]*gameBoard.getTileWidth()) + 0.5*gameBoard.getTileWidth();
+                double startY = (currentMoves.get(i)[1]*gameBoard.getTileHeight()) + 0.5*gameBoard.getTileHeight();
+                double endX = (currentMoves.get(i)[2]*gameBoard.getTileWidth()) + 0.5*gameBoard.getTileWidth();
+                double endY = (currentMoves.get(i)[3]*gameBoard.getTileHeight()) + 0.5*gameBoard.getTileHeight();
+                Line moveLine = new Line();
+                moveLine.setStroke(current.getPlayerColor());
+                moveLine.setStartX(startX);
+                moveLine.setStartY(startY);
+                moveLine.setEndX(endX);
+                moveLine.setEndY(endY);
+                moveLine.setStrokeWidth(4);
+                Circle dot  = new Circle(8);
+                dot.setCenterX(endX);
+                dot.setCenterY(endY);
+                dot.setFill(current.getPlayerColor());
+                overlay.getChildren().add(dot);
+                overlay.getChildren().add(moveLine);
+                coordinateLabels.add(new Label());
+                coordinateLabels.get(i).setTranslateX(startX + (endX-startX)/2);
+                coordinateLabels.get(i).setTranslateY(startY + (endY-startY)/2);
+                overlay.getChildren().add(coordinateLabels.get(i));
                 if(current.isRemoved(currentGame.getCurrentTurn(), i, gameBoard )){
                     percentages[i] = 0;
                     removedMoves++;
@@ -119,7 +137,8 @@ public class SlowMode extends Mode {
                     percentages[i] = (int) Math.round(compChance);
                 }
                 String format = String.valueOf(percentages[i]);
-                coordinateLabels.get(i).setText(coordinateLabels.get(i).getText() +" Chance: " + format +"%");
+                coordinateLabels.get(i).setText(coordinateLabels.get(i).getText() +"Chance: " + format +"%");
+                coordinateLabels.get(i).setOpacity(1);
             }
 
 
@@ -131,10 +150,10 @@ public class SlowMode extends Mode {
              */
             @Override
             public void handle(MouseEvent event) {
-                if(current.canChoose()){
+                if(current.canChoose() && current.getMoves().size()>0){
                     buttons.getChildren().clear();
                     current.makeTurn(gameBoard, currentGame);
-                    coordinates.getChildren().clear();
+                    overlay.getChildren().clear();
                 }
             }
         });

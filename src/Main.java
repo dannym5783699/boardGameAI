@@ -357,9 +357,10 @@ public class Main extends Application {
                 if(event.getCode().equals(KeyCode.ENTER)){
                     try{
                         int newValue = Integer.parseInt(games.getText());
-                        if(newValue > 0){
-                            numGames = newValue;
+                        if(newValue <= 0){
+                            throw new NumberFormatException();
                         }
+                        numGames = newValue;
                     }catch(NumberFormatException e){
                         System.out.println("Invalid number");
                     }

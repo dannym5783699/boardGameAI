@@ -35,7 +35,10 @@ public class ComputerPlayer implements Player{
     //If a computer player can have pieces clicked or decided by the computer.
     private final boolean chooseMoves;
 
-    private int numWins = 0;
+    private int numFirst = 0;
+    private int numSecond = 0;
+    private boolean isStarting;
+
 
 
     /**
@@ -83,7 +86,13 @@ public class ComputerPlayer implements Player{
     @Override
     public void makeTurn(Board gameBoard, Game currentGame) {
         Random random = new Random();
-        int randomIndex = random.nextInt(0, currentMoves.size());
+        int randomIndex;
+        if(currentMoves.size() > 0){
+            randomIndex = random.nextInt(0, currentMoves.size());
+        }
+        else{
+            randomIndex = 0;
+        }
         int fromC = currentMoves.get(randomIndex)[0];
         int fromR = currentMoves.get(randomIndex)[1];
         int toC = currentMoves.get(randomIndex)[2];
@@ -219,20 +228,48 @@ public class ComputerPlayer implements Player{
     }
 
     /**
-     * Gets the number of wins by the player.
-     * @return returns how many games were won.
+     * Gets wins depending on if the player is starting or not.
+     * @param hasFirst Is the player first to start or not.
+     * @return If the player was not starting then return other wins. Otherwise return starting wins.
      */
     @Override
-    public int getWins() {
-        return numWins;
+    public int getWins(boolean hasFirst) {
+        if(hasFirst){
+            return numFirst;
+        }
+        return numSecond;
     }
 
     /**
-     * Adds one win to current wins.
+     * Adds a win to either starting wins or other wins.
+     * @param hasFirst is the player first to start.
      */
     @Override
-    public void addWin() {
-        numWins++;
+    public void addWin(boolean hasFirst) {
+        if(hasFirst){
+            numFirst++;
+        }
+        else{
+            numSecond++;
+        }
+    }
+
+    /**
+     * Sets if the player is starting or not.
+     * @param isFirst Is the player first to start.
+     */
+    @Override
+    public void setFirst(boolean isFirst) {
+        isStarting = isFirst;
+    }
+
+    /**
+     * Checks if the player is starting.
+     * @return Returns true if the player is first to play and false if not.
+     */
+    @Override
+    public boolean isFirst() {
+        return isStarting;
     }
 
 

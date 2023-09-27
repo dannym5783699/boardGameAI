@@ -11,6 +11,8 @@ public class AutoMode extends Mode{
     //How many games to play.
     private final int turns;
 
+    //Keeps track of who started last game.
+    private Player lastStart;
     /**
      * Creates an AutoMode game mode, requires two colors and the number of turns.
      * @param player1 Color for player1.
@@ -22,6 +24,7 @@ public class AutoMode extends Mode{
         Player[] players = new Player[2];
         players[0] = new ComputerPlayer(player1, -1, 0, 1, false);
         players[1] = new ComputerPlayer(player2, 1, 0, 2, false);
+        lastStart = players[1];
         super.setPlayersList(players);
     }
 
@@ -63,7 +66,16 @@ public class AutoMode extends Mode{
      */
     @Override
     public Player startingPlayer() {
-        return getPlayersList()[0];
+        if(lastStart.equals(getPlayersList()[1])) {
+            lastStart.setFirst(false);
+            lastStart = getPlayersList()[0];
+            lastStart.setFirst(true);
+            return getPlayersList()[0];
+        }
+        lastStart.setFirst(false);
+        lastStart = getPlayersList()[1];
+        lastStart.setFirst(true);
+        return getPlayersList()[1];
     }
 
     /**
